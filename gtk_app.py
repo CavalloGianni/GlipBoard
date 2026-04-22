@@ -4,6 +4,7 @@ import base64
 import json
 import os
 import subprocess
+import sys
 import threading
 import time
 from dataclasses import dataclass
@@ -638,7 +639,7 @@ class MainWindow(Adw.ApplicationWindow):
 
 class MyClipboardApp(Adw.Application):
     def __init__(self) -> None:
-        super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.FLAGS_NONE)
+        super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE)
         self.data_dir = get_data_dir()
         self.project_dir = PROJECT_DIR
         self.history_store = HistoryStore(self.data_dir)
@@ -653,16 +654,26 @@ class MyClipboardApp(Adw.Application):
         self.watcher: WaylandClipboardWatcher | PollingClipboardWatcher | None = None
         self.preferences_dialog: PreferencesDialog | None = None
         self.last_text = self.state.items[0] if self.state.items else ""
+        self.has_completed_first_activate = False
 
     def do_activate(self) -> None:
         if not self.window:
             self.window = MainWindow(self)
 
-        if self.settings.show_window_on_startup:
+        if not self.has_completed_first_activate:
+            if self.settings.show_window_on_startup:
+                self.window.present()
+            self.has_completed_first_activate = True
+        else:
             self.window.present()
 
         if not self.watcher:
             self.start_services()
+
+    def do_command_line(self, command_line: Gio.ApplicationCommandLine) -> int:
+        self.activate()
+        command_line.set_exit_status(0)
+        return 0
 
     def do_startup(self) -> None:
         Adw.Application.do_startup(self)
@@ -826,7 +837,7 @@ class MyClipboardApp(Adw.Application):
 def main() -> int:
     try:
         app = MyClipboardApp()
-        return app.run(None)
+        return app.run(sys.argv)
     except RuntimeError as error:
         print(f"Impossibile inizializzare GTK: {error}")
         return 1

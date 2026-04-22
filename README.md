@@ -76,7 +76,7 @@ dist/glipboard_0.1.1_all.deb
 To install the package locally:
 
 ```bash
-sudo apt install ./dist/glipboard_0.1.0_all.deb
+sudo apt install ./dist/glipboard_0.1.1_all.deb
 ```
 
 The `.deb` build installs the application under `/usr/share/glipboard`, adds the `glipboard` launcher, and registers the desktop entry for the system.
@@ -131,6 +131,36 @@ To reinstall it:
 2. Copy text normally from any application.
 3. Open the main window or use the tray menu.
 4. Select an item from the history to copy it back to the clipboard.
+
+## System Shortcut
+
+If you want a reliable keyboard shortcut to bring GlipBoard back to the foreground, use a system-level shortcut instead of an app-managed global hotkey.
+
+Recommended command:
+
+```bash
+glipboard
+```
+
+Suggested shortcut:
+
+```text
+Super+V
+```
+
+Typical setup path on Pop!_OS or Ubuntu:
+
+1. Open `Settings`
+2. Go to `Keyboard`
+3. Open `Keyboard Shortcuts`
+4. Add a custom shortcut
+5. Set command to `glipboard`
+6. Assign your preferred key combination
+
+Behavior:
+
+- if GlipBoard is not running, command starts it
+- if GlipBoard is already running, command asks existing instance to show its window
 
 ## Screenshots
 
