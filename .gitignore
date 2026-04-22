@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Local app data
+.myclipboard-data/
+
+# Node legacy leftovers
+node_modules/
+
+# Local tooling
+.codex
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
