@@ -110,7 +110,7 @@ This creates:
 
 - a desktop launcher in `~/.local/share/applications/glipboard.desktop`
 - a startup script in `~/.local/share/glipboard/run-glipboard.sh`
-- a reference to `logo.2816x1536.png` as the application icon
+- a reference to `image (2).png` as the application icon
 
 To remove the local installation:
 

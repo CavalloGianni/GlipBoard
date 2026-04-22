@@ -9,8 +9,8 @@ DESKTOP_FILE="${APPLICATIONS_DIR}/glipboard.desktop"
 LAUNCHER_PATH="${APP_DIR}/run-glipboard.sh"
 ICON_PATH=""
 
-if [[ -f "${PROJECT_DIR}/logo.2816x1536.png" ]]; then
-  ICON_PATH="${PROJECT_DIR}/logo.2816x1536.png"
+if [[ -f "${PROJECT_DIR}/image (2).png" ]]; then
+  ICON_PATH="${PROJECT_DIR}/image (2).png"
 fi
 
 mkdir -p "${APP_DIR}" "${APPLICATIONS_DIR}"

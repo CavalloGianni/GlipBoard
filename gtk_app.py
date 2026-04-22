@@ -24,7 +24,7 @@ MAX_TEXT_LENGTH = 50_000
 POLL_INTERVAL_MS = 800
 WAYLAND_WATCHER_ARGS = ["wl-paste", "--type", "text", "--watch", "sh", "scripts/wl-watch-event.sh"]
 PROJECT_DIR = Path(__file__).resolve().parent
-APP_ICON_PATH = PROJECT_DIR / "logo.2816x1536.png"
+APP_ICON_PATH = PROJECT_DIR / "image (2).png"
 
 
 def normalize_text(text: str) -> str:

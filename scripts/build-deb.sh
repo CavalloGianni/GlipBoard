@@ -31,9 +31,9 @@ mkdir -p "${APP_DIR}/scripts" "${ICON_DIR}" "${APPLICATIONS_DIR}" "${BIN_DIR}" "
 install -m 0644 "${PROJECT_DIR}/gtk_app.py" "${APP_DIR}/gtk_app.py"
 install -m 0644 "${PROJECT_DIR}/tray_helper.py" "${APP_DIR}/tray_helper.py"
 install -m 0644 "${PROJECT_DIR}/README.md" "${APP_DIR}/README.md"
-install -m 0644 "${PROJECT_DIR}/logo.2816x1536.png" "${APP_DIR}/logo.2816x1536.png"
+install -m 0644 "${PROJECT_DIR}/image (2).png" "${APP_DIR}/image (2).png"
 install -m 0755 "${PROJECT_DIR}/scripts/wl-watch-event.sh" "${APP_DIR}/scripts/wl-watch-event.sh"
-install -m 0644 "${PROJECT_DIR}/logo.2816x1536.png" "${ICON_DIR}/glipboard.png"
+install -m 0644 "${PROJECT_DIR}/image (2).png" "${ICON_DIR}/glipboard.png"
 
 cat > "${BIN_DIR}/glipboard" <<'EOF'
 #!/usr/bin/env bash

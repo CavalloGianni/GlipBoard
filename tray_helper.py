@@ -18,7 +18,7 @@ APP_ID = "glipboard-tray"
 APP_TITLE = "GlipBoard"
 MAX_MENU_HISTORY_ITEMS = 5
 PROJECT_DIR = Path(__file__).resolve().parent
-APP_ICON_PATH = PROJECT_DIR / "logo.2816x1536.png"
+APP_ICON_PATH = PROJECT_DIR / "image (2).png"
 
 
 def get_data_dir() -> Path:
