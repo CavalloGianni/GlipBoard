@@ -39,10 +39,12 @@ Install the main dependencies on Pop!_OS:
 
 ```bash
 sudo apt update
-sudo apt install python3 python3-gi python3-gi-cairo gir1.2-gtk-4.0 gir1.2-adw-1 wl-clipboard gir1.2-ayatanaappindicator3-0.1
+sudo apt install python3 python3-gi python3-gi-cairo gir1.2-gtk-4.0 gir1.2-adw-1 wl-clipboard xclip gir1.2-ayatanaappindicator3-0.1
 ```
 
 If you use the tray integration on GNOME/Pop!_OS, make sure AppIndicator support is enabled in your desktop environment.
+
+GlipBoard uses `wl-clipboard` on Wayland and `xclip` on X11 sessions.
 
 ## Recommended Installation
 
@@ -51,7 +53,7 @@ The recommended way to install GlipBoard is to download the `.deb` package from 
 After downloading the package:
 
 ```bash
-sudo apt install ./glipboard_0.1.0_all.deb
+sudo apt install ./glipboard_<version>_all.deb
 ```
 
 This installs GlipBoard like a normal end-user application and makes it available from the system application launcher.
@@ -68,7 +70,7 @@ npm run build-deb
 The generated package will be created at:
 
 ```text
-dist/glipboard_0.1.0_all.deb
+dist/glipboard_0.1.1_all.deb
 ```
 
 To install the package locally:
@@ -167,12 +169,14 @@ During development, if `.glipboard-data/` already exists in the project director
 
 GlipBoard is already usable on Pop!_OS and has been tested as an installable `.deb` package. The current public release is:
 
-- `v0.1.0`
+- `v0.1.1` in preparation
+- `v0.1.0` currently public
 
 Related documents:
 
 - `CHANGELOG.md`
 - `docs/releases/0.1.0.md`
+- `docs/releases/0.1.1.md`
 
 ## Roadmap
 

@@ -20,7 +20,8 @@ APP_ID = "com.gianni.GlipBoard"
 APP_NAME = "GlipBoard"
 DEFAULT_MAX_HISTORY_ITEMS = 15
 MAX_TEXT_LENGTH = 50_000
-WATCHER_ARGS = ["wl-paste", "--type", "text", "--watch", "sh", "scripts/wl-watch-event.sh"]
+POLL_INTERVAL_MS = 800
+WAYLAND_WATCHER_ARGS = ["wl-paste", "--type", "text", "--watch", "sh", "scripts/wl-watch-event.sh"]
 PROJECT_DIR = Path(__file__).resolve().parent
 APP_ICON_PATH = PROJECT_DIR / "logo.2816x1536.png"
 
@@ -49,6 +50,66 @@ def command_exists(command: str, args: list[str] | None = None) -> bool:
     except FileNotFoundError:
         return False
     return result.returncode == 0
+
+
+def get_session_type() -> str:
+    return str(GLib.getenv("XDG_SESSION_TYPE") or "").strip().lower()
+
+
+class ClipboardBackend:
+    def __init__(self, backend_id: str, status_label: str) -> None:
+        self.backend_id = backend_id
+        self.status_label = status_label
+
+    def read_text(self) -> str:
+        raise NotImplementedError
+
+    def write_text(self, text: str) -> None:
+        raise NotImplementedError
+
+
+class WaylandClipboardBackend(ClipboardBackend):
+    def __init__(self) -> None:
+        super().__init__("wayland", "Wayland")
+
+    def write_text(self, text: str) -> None:
+        subprocess.run(["wl-copy", "--type", "text/plain"], input=text, text=True, check=True)
+
+
+class XclipClipboardBackend(ClipboardBackend):
+    def __init__(self) -> None:
+        super().__init__("x11", "X11")
+
+    def read_text(self) -> str:
+        result = subprocess.run(
+            ["xclip", "-selection", "clipboard", "-o"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            return ""
+        return result.stdout
+
+    def write_text(self, text: str) -> None:
+        subprocess.run(["xclip", "-selection", "clipboard"], input=text, text=True, check=True)
+
+
+def detect_clipboard_backend() -> ClipboardBackend | None:
+    session_type = get_session_type()
+    has_wayland = command_exists("wl-paste") and command_exists("wl-copy")
+    has_xclip = command_exists("xclip")
+
+    if session_type == "wayland" and has_wayland:
+        return WaylandClipboardBackend()
+    if session_type == "x11" and has_xclip:
+        return XclipClipboardBackend()
+    if has_wayland:
+        return WaylandClipboardBackend()
+    if has_xclip:
+        return XclipClipboardBackend()
+    return None
 
 
 def get_data_dir() -> Path:
@@ -221,7 +282,7 @@ class CommandChannel:
         return commands
 
 
-class ClipboardWatcher:
+class WaylandClipboardWatcher:
     def __init__(self, on_text, on_error) -> None:
         self._on_text = on_text
         self._on_error = on_error
@@ -232,7 +293,7 @@ class ClipboardWatcher:
     def start(self) -> None:
         try:
             self._process = subprocess.Popen(
-                WATCHER_ARGS,
+                WAYLAND_WATCHER_ARGS,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 stdin=subprocess.DEVNULL,
@@ -244,7 +305,7 @@ class ClipboardWatcher:
             GLib.idle_add(self._on_error, "Dipendenza mancante: installa wl-clipboard")
             return
         except OSError as error:
-            GLib.idle_add(self._on_error, f"Errore watcher: {error}")
+            GLib.idle_add(self._on_error, f"Errore watcher clipboard: {error}")
             return
 
         self._stdout_thread = threading.Thread(target=self._read_stdout, daemon=True)
@@ -290,6 +351,33 @@ class ClipboardWatcher:
             message = line.strip()
             if message:
                 GLib.idle_add(self._on_error, summarize_text(message, 120))
+
+
+class PollingClipboardWatcher:
+    def __init__(self, backend: ClipboardBackend, on_text, on_error) -> None:
+        self.backend = backend
+        self._on_text = on_text
+        self._on_error = on_error
+        self._source_id: int | None = None
+
+    def start(self) -> None:
+        if self._source_id is None:
+            self._source_id = GLib.timeout_add(POLL_INTERVAL_MS, self._poll)
+
+    def stop(self) -> None:
+        if self._source_id is not None:
+            GLib.source_remove(self._source_id)
+            self._source_id = None
+
+    def _poll(self) -> bool:
+        try:
+            text = self.backend.read_text()
+        except OSError as error:
+            self._on_error(f"Errore polling clipboard: {error}")
+            return True
+
+        self._on_text(text)
+        return True
 
 
 class TrayHelper:
@@ -558,10 +646,11 @@ class MyClipboardApp(Adw.Application):
         self.command_channel = CommandChannel(self.data_dir)
         self.tray_helper = TrayHelper(self.data_dir)
         self.autostart_manager = AutostartManager(self.project_dir)
+        self.clipboard_backend = detect_clipboard_backend()
         self.settings = self.settings_store.load()
         self.state = AppState(items=self.history_store.load(self.settings.max_items))
         self.window: MainWindow | None = None
-        self.watcher: ClipboardWatcher | None = None
+        self.watcher: WaylandClipboardWatcher | PollingClipboardWatcher | None = None
         self.preferences_dialog: PreferencesDialog | None = None
         self.last_text = self.state.items[0] if self.state.items else ""
 
@@ -616,12 +705,19 @@ class MyClipboardApp(Adw.Application):
         self.window.present()
 
     def start_services(self) -> None:
-        if not command_exists("wl-paste") or not command_exists("wl-copy"):
-            self.set_status("Dipendenza mancante: installa wl-clipboard")
+        if not self.clipboard_backend:
+            self.set_status("Backend clipboard mancante: installa wl-clipboard o xclip")
             return
 
-        self.set_status("Watcher clipboard attivo")
-        self.watcher = ClipboardWatcher(self.handle_captured_text, self.handle_watcher_error)
+        self.set_status(f"Watcher clipboard attivo ({self.clipboard_backend.status_label})")
+        if self.clipboard_backend.backend_id == "wayland":
+            self.watcher = WaylandClipboardWatcher(self.handle_captured_text, self.handle_watcher_error)
+        else:
+            self.watcher = PollingClipboardWatcher(
+                self.clipboard_backend,
+                self.handle_captured_text,
+                self.handle_watcher_error,
+            )
         self.watcher.start()
 
     def set_status(self, message: str) -> None:
@@ -689,15 +785,22 @@ class MyClipboardApp(Adw.Application):
         self.state.items.insert(0, normalized)
         self.trim_history_to_settings()
         self.persist_history()
-        self.set_status("Watcher clipboard attivo")
+        backend_label = self.clipboard_backend.status_label if self.clipboard_backend else "clipboard"
+        self.set_status(f"Watcher clipboard attivo ({backend_label})")
         print(f"Clipboard catturata: {summarize_text(normalized)}")
         return False
 
     def restore_clipboard(self, text: str) -> None:
+        if not self.clipboard_backend:
+            self.set_status("Backend clipboard non disponibile")
+            if self.window:
+                self.window.show_toast("Backend clipboard non disponibile")
+            return
+
         try:
-            subprocess.run(["wl-copy", "--type", "text/plain"], input=text, text=True, check=True)
+            self.clipboard_backend.write_text(text)
         except (OSError, subprocess.CalledProcessError) as error:
-            self.set_status(f"Errore wl-copy: {error}")
+            self.set_status(f"Errore scrittura clipboard: {error}")
             if self.window:
                 self.window.show_toast("Errore nel ripristino degli appunti")
             return

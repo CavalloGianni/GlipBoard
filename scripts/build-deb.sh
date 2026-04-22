@@ -60,7 +60,7 @@ Section: utils
 Priority: optional
 Architecture: all
 Maintainer: Gianni Cavallo <noreply@example.com>
-Depends: python3, python3-gi, python3-gi-cairo, gir1.2-gtk-4.0, gir1.2-adw-1, wl-clipboard, gir1.2-ayatanaappindicator3-0.1
+Depends: python3, python3-gi, python3-gi-cairo, gir1.2-gtk-4.0, gir1.2-adw-1, wl-clipboard, xclip, gir1.2-ayatanaappindicator3-0.1
 Description: ${DESCRIPTION}
  GlipBoard is a clipboard manager for Pop!_OS built with Python GTK4/libadwaita.
 EOF

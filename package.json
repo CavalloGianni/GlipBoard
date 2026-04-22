@@ -1,6 +1,6 @@
 {
   "name": "glipboard",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Clipboard manager for Pop!_OS built with Python GTK4/libadwaita",
   "scripts": {
     "start": "python3 gtk_app.py",
