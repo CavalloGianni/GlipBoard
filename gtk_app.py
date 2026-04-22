@@ -21,7 +21,12 @@ APP_NAME = "GlipBoard"
 DEFAULT_MAX_HISTORY_ITEMS = 15
 MAX_TEXT_LENGTH = 50_000
 WATCHER_ARGS = ["wl-paste", "--type", "text", "--watch", "sh", "scripts/wl-watch-event.sh"]
-APP_ICON_PATH = Path(__file__).resolve().parent / "logo.png"
+PROJECT_DIR = Path(__file__).resolve().parent
+APP_ICON_PATH = (
+    PROJECT_DIR / "logo.2816x1536.png"
+    if (PROJECT_DIR / "logo.2816x1536.png").exists()
+    else PROJECT_DIR / "logo.png"
+)
 
 
 def normalize_text(text: str) -> str:
@@ -55,7 +60,7 @@ def get_data_dir() -> Path:
     if override:
         data_dir = Path(override).expanduser()
     else:
-        data_dir = Path(__file__).resolve().parent / ".glipboard-data"
+        data_dir = PROJECT_DIR / ".glipboard-data"
     data_dir.mkdir(parents=True, exist_ok=True)
     return data_dir
 
@@ -547,7 +552,7 @@ class MyClipboardApp(Adw.Application):
     def __init__(self) -> None:
         super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.FLAGS_NONE)
         self.data_dir = get_data_dir()
-        self.project_dir = Path(__file__).resolve().parent
+        self.project_dir = PROJECT_DIR
         self.history_store = HistoryStore(self.data_dir)
         self.settings_store = SettingsStore(self.data_dir)
         self.command_channel = CommandChannel(self.data_dir)

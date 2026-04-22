@@ -17,7 +17,12 @@ from gi.repository import GLib, Gtk
 APP_ID = "glipboard-tray"
 APP_TITLE = "GlipBoard"
 MAX_MENU_HISTORY_ITEMS = 5
-APP_ICON_PATH = Path(__file__).resolve().parent / "logo.png"
+PROJECT_DIR = Path(__file__).resolve().parent
+APP_ICON_PATH = (
+    PROJECT_DIR / "logo.2816x1536.png"
+    if (PROJECT_DIR / "logo.2816x1536.png").exists()
+    else PROJECT_DIR / "logo.png"
+)
 
 
 def get_data_dir() -> Path:
@@ -25,7 +30,7 @@ def get_data_dir() -> Path:
     if override:
         data_dir = Path(override).expanduser()
     else:
-        data_dir = Path(__file__).resolve().parent / ".glipboard-data"
+        data_dir = PROJECT_DIR / ".glipboard-data"
     data_dir.mkdir(parents=True, exist_ok=True)
     return data_dir
 
