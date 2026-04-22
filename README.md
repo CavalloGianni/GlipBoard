@@ -102,6 +102,15 @@ Qui vengono conservati cronologia e impostazioni locali.
 
 Il progetto e gia utilizzabile su Pop!_OS ed e orientato a un uso personale reale, con l'idea di essere rifinito e reso sempre piu pronto per la pubblicazione.
 
+## Prima release pubblica
+
+La prima release pubblica preparata per il repository e `v0.1.0`.
+
+Documenti utili:
+
+- `CHANGELOG.md`
+- `docs/releases/0.1.0.md`
+
 ## Roadmap iniziale
 
 - migliorare ancora la presentazione della repository

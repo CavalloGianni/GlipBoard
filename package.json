@@ -1,9 +1,19 @@
 {
   "name": "glipboard",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Clipboard manager for Pop!_OS built with Python GTK4/libadwaita",
   "scripts": {
-    "start": "python3 gtk_app.py"
+    "start": "python3 gtk_app.py",
+    "install-local": "./scripts/install-local.sh",
+    "uninstall-local": "./scripts/uninstall-local.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CavalloGianni/GlipBoard.git"
+  },
+  "homepage": "https://github.com/CavalloGianni/GlipBoard",
+  "bugs": {
+    "url": "https://github.com/CavalloGianni/GlipBoard/issues"
   },
   "keywords": [],
   "author": "",
