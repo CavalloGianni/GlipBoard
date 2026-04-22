@@ -1,182 +1,196 @@
 # GlipBoard
 
-GlipBoard e un clipboard manager desktop per Pop!_OS.
+GlipBoard is a desktop clipboard manager for Pop!_OS.
 
-L'app salva la cronologia dei testi copiati, ti permette di rivederli in una finestra semplice e di ricopiarli con un clic quando ti servono di nuovo.
+It keeps a history of copied text, lets you browse previous entries in a clean GTK interface, and allows you to copy any saved item back to the clipboard with a single click.
 
-![Logo GlipBoard](logo.2816x1536.png)
+![GlipBoard logo](logo.2816x1536.png)
 
-## Cosa fa
+## Overview
 
-- monitora i testi copiati in ambiente Wayland
-- mantiene una cronologia locale degli ultimi elementi copiati
-- permette di ricopiare rapidamente un elemento dalla lista
-- offre una finestra principale GTK4 stabile
-- integra una tray come scorciatoia pratica, senza dipendere solo da quella
-- supporta impostazioni base come numero massimo di elementi e avvio dell'interfaccia
+GlipBoard is designed for a practical Linux desktop workflow on Pop!_OS, with a focus on:
 
-## Stack del progetto
+- reliable text clipboard history on Wayland
+- a simple main window for browsing copied items
+- a tray integration for quick access
+- lightweight local storage for history and settings
+- a packaging path that works both for development and public distribution
+
+## Features
+
+- Monitors copied text on Wayland
+- Stores a local history of recent clipboard items
+- Restores any saved text back to the clipboard with one click
+- Provides a GTK4/libadwaita main window
+- Includes a tray helper for quick access
+- Supports basic preferences such as maximum saved items and startup behavior
+- Supports local installation and Debian package generation
+
+## Tech Stack
 
 - Python 3
 - GTK4 + libadwaita
 - `wl-clipboard`
 - `AyatanaAppIndicator3`
 
-## Requisiti su Pop!_OS
+## Requirements
 
-Installa i pacchetti necessari:
+Install the main dependencies on Pop!_OS:
 
 ```bash
 sudo apt update
 sudo apt install python3 python3-gi python3-gi-cairo gir1.2-gtk-4.0 gir1.2-adw-1 wl-clipboard gir1.2-ayatanaappindicator3-0.1
 ```
 
-Se usi la tray su GNOME/Pop!_OS, assicurati anche di avere il supporto AppIndicator attivo.
+If you use the tray integration on GNOME/Pop!_OS, make sure AppIndicator support is enabled in your desktop environment.
 
-## Installazione consigliata
+## Recommended Installation
 
-Il modo consigliato per installare GlipBoard e scaricare il file `.deb` dalla pagina `Releases` del progetto su GitHub.
+The recommended way to install GlipBoard is to download the `.deb` package from the GitHub `Releases` page.
 
-Dopo il download:
+After downloading the package:
 
 ```bash
 sudo apt install ./glipboard_0.1.0_all.deb
 ```
 
-Questa installazione aggiunge GlipBoard alle applicazioni del sistema e installa i file dell'app in modo piu vicino a quello di un utente finale.
+This installs GlipBoard like a normal end-user application and makes it available from the system application launcher.
 
-## Pacchetto .deb
+## Build the `.deb` Package
 
-Se vuoi generare il pacchetto Debian dal repository:
+If you want to build the Debian package from the repository:
 
 ```bash
 chmod +x scripts/build-deb.sh
 npm run build-deb
 ```
 
-Il pacchetto generato finira in:
+The generated package will be created at:
 
 ```text
 dist/glipboard_0.1.0_all.deb
 ```
 
-Per installarlo su Pop!_OS:
+To install the package locally:
 
 ```bash
 sudo apt install ./dist/glipboard_0.1.0_all.deb
 ```
 
-La build `.deb` installa l'app in `/usr/share/glipboard`, aggiunge il launcher `glipboard` e registra la voce desktop di sistema.
+The `.deb` build installs the application under `/usr/share/glipboard`, adds the `glipboard` launcher, and registers the desktop entry for the system.
 
-## Sviluppo locale
+## Development
 
-Per avviare GlipBoard direttamente dal repository:
+To run GlipBoard directly from the repository:
 
 ```bash
 npm start
 ```
 
-Questo comando avvia:
+This starts:
 
-- la finestra principale GTK
-- il watcher della clipboard basato su `wl-paste`
-- il processo helper della tray
+- the main GTK window
+- the clipboard watcher based on `wl-paste`
+- the tray helper process
 
-## Installazione locale dal repository
+## Local Installation From the Repository
 
-Questa opzione e utile soprattutto per sviluppo e test locali, non come percorso principale per gli utenti finali.
+This option is mainly useful for development and local testing, not as the primary installation path for end users.
 
-Per aggiungere GlipBoard alle applicazioni del tuo utente:
+To add GlipBoard to your user applications:
 
 ```bash
 chmod +x scripts/install-local.sh scripts/uninstall-local.sh
 ./scripts/install-local.sh
 ```
 
-L'installazione crea:
+This creates:
 
-- il launcher desktop in `~/.local/share/applications/glipboard.desktop`
-- lo script di avvio in `~/.local/share/glipboard/run-glipboard.sh`
-- il riferimento all'icona `logo.2816x1536.png`
+- a desktop launcher in `~/.local/share/applications/glipboard.desktop`
+- a startup script in `~/.local/share/glipboard/run-glipboard.sh`
+- a reference to `logo.2816x1536.png` as the application icon
 
-Per rimuovere l'installazione locale:
+To remove the local installation:
 
 ```bash
 ./scripts/uninstall-local.sh
 ```
 
-Per reinstallare:
+To reinstall it:
 
 ```bash
 ./scripts/uninstall-local.sh
 ./scripts/install-local.sh
 ```
 
-## Come si usa
+## Usage
 
-1. Avvia GlipBoard.
-2. Copia normalmente del testo nel sistema.
-3. Apri la finestra principale o usa la tray.
-4. Seleziona un elemento della cronologia per copiarlo di nuovo negli appunti.
+1. Launch GlipBoard.
+2. Copy text normally from any application.
+3. Open the main window or use the tray menu.
+4. Select an item from the history to copy it back to the clipboard.
 
-## Screenshot
+## Screenshots
 
 ### Tray
 
-![Tray menu di GlipBoard](docs/screenshots/tray-menu.png)
+![GlipBoard tray menu](docs/screenshots/tray-menu.png)
 
-### Finestra Principale
+### Main Window
 
-![Finestra principale di GlipBoard](docs/screenshots/main-window.png)
+![GlipBoard main window](docs/screenshots/main-window.png)
 
-### Impostazioni
+### Preferences
 
-![Finestra impostazioni di GlipBoard](docs/screenshots/settings-window.png)
+![GlipBoard preferences window](docs/screenshots/settings-window.png)
 
-## Dati locali
+## Local Data
 
-GlipBoard salva i dati dell'app nella cartella locale:
+GlipBoard stores its local application data in:
 
 ```text
 ~/.local/share/glipboard/
 ```
 
-Durante lo sviluppo, se esiste gia `.glipboard-data/` nel progetto, GlipBoard continua a usarla per compatibilita. Nella versione installata usa invece la cartella utente standard.
+During development, if `.glipboard-data/` already exists in the project directory, GlipBoard continues to use it for compatibility. In the installed application, it uses the standard user data directory.
 
-## Struttura del progetto
+## Project Structure
 
-- `gtk_app.py`: applicazione principale GTK4/libadwaita
-- `tray_helper.py`: helper tray separato basato su AppIndicator
-- `scripts/install-local.sh`: installazione desktop locale
-- `scripts/uninstall-local.sh`: rimozione installazione locale
-- `scripts/wl-watch-event.sh`: gestione eventi clipboard via `wl-paste`
+- `gtk_app.py`: main GTK4/libadwaita application
+- `tray_helper.py`: separate tray helper based on AppIndicator
+- `scripts/build-deb.sh`: Debian package build script
+- `scripts/install-local.sh`: local desktop installation script
+- `scripts/uninstall-local.sh`: local installation removal script
+- `scripts/wl-watch-event.sh`: clipboard event handling via `wl-paste`
 
-## Stato del progetto
+## Release Status
 
-Il progetto e gia utilizzabile su Pop!_OS ed e orientato a un uso personale reale, con l'idea di essere rifinito e reso sempre piu pronto per la pubblicazione.
+GlipBoard is already usable on Pop!_OS and has been tested as an installable `.deb` package. The current public release is:
 
-## Prima release pubblica
+- `v0.1.0`
 
-La prima release pubblica preparata per il repository e `v0.1.0`.
-
-Documenti utili:
+Related documents:
 
 - `CHANGELOG.md`
 - `docs/releases/0.1.0.md`
 
-## Roadmap iniziale
+## Roadmap
 
-- migliorare ancora la presentazione della repository
-- preparare una prima release pubblica
-- valutare un pacchetto `.deb` per installazione piu semplice
+- continue polishing the public repository presentation
+- improve documentation and onboarding
+- expand screenshots and release materials
+- evaluate additional packaging options over time
 
 ## Repository
 
-Repository GitHub:
+GitHub repository:
 
 `https://github.com/CavalloGianni/GlipBoard`
 
-## Metadati pubblici
+## Author
 
-- autore: Gianni Cavallo
-- licenza: MIT
+Gianni Cavallo
+
+## License
+
+MIT. See [LICENSE](LICENSE).
