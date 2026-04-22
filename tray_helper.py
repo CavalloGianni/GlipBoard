@@ -26,7 +26,11 @@ def get_data_dir() -> Path:
     if override:
         data_dir = Path(override).expanduser()
     else:
-        data_dir = PROJECT_DIR / ".glipboard-data"
+        legacy_dir = PROJECT_DIR / ".glipboard-data"
+        if legacy_dir.exists():
+            data_dir = legacy_dir
+        else:
+            data_dir = Path(GLib.get_user_data_dir()) / "glipboard"
     data_dir.mkdir(parents=True, exist_ok=True)
     return data_dir
 

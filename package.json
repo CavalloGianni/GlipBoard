@@ -5,7 +5,8 @@
   "scripts": {
     "start": "python3 gtk_app.py",
     "install-local": "./scripts/install-local.sh",
-    "uninstall-local": "./scripts/uninstall-local.sh"
+    "uninstall-local": "./scripts/uninstall-local.sh",
+    "build-deb": "./scripts/build-deb.sh"
   },
   "repository": {
     "type": "git",

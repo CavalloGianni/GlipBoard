@@ -75,6 +75,29 @@ Per reinstallare:
 ./scripts/install-local.sh
 ```
 
+## Pacchetto .deb
+
+Per costruire un pacchetto Debian locale:
+
+```bash
+chmod +x scripts/build-deb.sh
+npm run build-deb
+```
+
+Il pacchetto generato finira in:
+
+```text
+dist/glipboard_0.1.0_all.deb
+```
+
+Per installarlo su Pop!_OS:
+
+```bash
+sudo apt install ./dist/glipboard_0.1.0_all.deb
+```
+
+La build `.deb` installa l'app in `/usr/share/glipboard`, aggiunge il launcher `glipboard` e registra la voce desktop di sistema.
+
 ## Come si usa
 
 1. Avvia GlipBoard.
@@ -97,10 +120,10 @@ Suggerimento per la repository:
 GlipBoard salva i dati dell'app nella cartella locale:
 
 ```text
-.glipboard-data/
+~/.local/share/glipboard/
 ```
 
-Qui vengono conservati cronologia e impostazioni locali.
+Durante lo sviluppo, se esiste gia `.glipboard-data/` nel progetto, GlipBoard continua a usarla per compatibilita. Nella versione installata usa invece la cartella utente standard.
 
 ## Struttura del progetto
 

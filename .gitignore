@@ -13,6 +13,9 @@ node_modules/
 # Local tooling
 .codex
 
+# Build artifacts
+dist/
+
 # OS / editor noise
 .DS_Store
 Thumbs.db
