@@ -1,4 +1,4 @@
-# MyClipboard V1 Design
+# GlipBoard V1 Design
 
 ## Goal
 

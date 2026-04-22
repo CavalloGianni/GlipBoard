@@ -1,4 +1,4 @@
-# MyClipboard Python GTK Migration Design
+# GlipBoard Python GTK Migration Design
 
 ## Goal
 

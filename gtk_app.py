@@ -16,8 +16,8 @@ gi.require_version("Adw", "1")
 from gi.repository import Adw, Gio, GLib, Gtk
 
 
-APP_ID = "com.gianni.MyClipboard"
-APP_NAME = "MyClipboard"
+APP_ID = "com.gianni.GlipBoard"
+APP_NAME = "GlipBoard"
 DEFAULT_MAX_HISTORY_ITEMS = 15
 MAX_TEXT_LENGTH = 50_000
 WATCHER_ARGS = ["wl-paste", "--type", "text", "--watch", "sh", "scripts/wl-watch-event.sh"]
@@ -50,11 +50,11 @@ def command_exists(command: str, args: list[str] | None = None) -> bool:
 
 
 def get_data_dir() -> Path:
-    override = GLib.getenv("MYCLIPBOARD_DATA_DIR")
+    override = GLib.getenv("GLIPBOARD_DATA_DIR") or GLib.getenv("MYCLIPBOARD_DATA_DIR")
     if override:
         data_dir = Path(override).expanduser()
     else:
-        data_dir = Path(__file__).resolve().parent / ".myclipboard-data"
+        data_dir = Path(__file__).resolve().parent / ".glipboard-data"
     data_dir.mkdir(parents=True, exist_ok=True)
     return data_dir
 
@@ -153,7 +153,7 @@ class AutostartManager:
     def __init__(self, project_dir: Path) -> None:
         config_home = Path(GLib.getenv("XDG_CONFIG_HOME") or Path.home() / ".config")
         self.autostart_dir = config_home / "autostart"
-        self.desktop_file = self.autostart_dir / "myclipboard.desktop"
+        self.desktop_file = self.autostart_dir / "glipboard.desktop"
         self.project_dir = project_dir
 
     def apply(self, enabled: bool) -> None:
@@ -295,7 +295,11 @@ class TrayHelper:
             self.process = subprocess.Popen(
                 ["python3", "tray_helper.py"],
                 cwd=Path(__file__).resolve().parent,
-                env={**os.environ, "MYCLIPBOARD_DATA_DIR": str(self.base_dir)},
+                env={
+                    **os.environ,
+                    "GLIPBOARD_DATA_DIR": str(self.base_dir),
+                    "MYCLIPBOARD_DATA_DIR": str(self.base_dir),
+                },
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 stdin=subprocess.DEVNULL,
@@ -384,7 +388,7 @@ class PreferencesDialog(Adw.PreferencesDialog):
 
         self.autostart_row = Adw.SwitchRow()
         self.autostart_row.set_title("Avvia automaticamente con il sistema")
-        self.autostart_row.set_subtitle("Crea o rimuove l'avvio automatico di MyClipboard in Pop!_OS.")
+        self.autostart_row.set_subtitle("Crea o rimuove l'avvio automatico di GlipBoard in Pop!_OS.")
         self.autostart_row.set_active(self.app_ref.settings.autostart_enabled)
         self.autostart_row.connect("notify::active", self._on_autostart_changed)
         group.add(self.autostart_row)

@@ -14,17 +14,17 @@ from gi.repository import AyatanaAppIndicator3 as AppIndicator3
 from gi.repository import GLib, Gtk
 
 
-APP_ID = "myclipboard-tray"
-APP_TITLE = "MyClipboard"
+APP_ID = "glipboard-tray"
+APP_TITLE = "GlipBoard"
 MAX_MENU_HISTORY_ITEMS = 5
 
 
 def get_data_dir() -> Path:
-    override = os.environ.get("MYCLIPBOARD_DATA_DIR")
+    override = os.environ.get("GLIPBOARD_DATA_DIR") or os.environ.get("MYCLIPBOARD_DATA_DIR")
     if override:
         data_dir = Path(override).expanduser()
     else:
-        data_dir = Path(__file__).resolve().parent / ".myclipboard-data"
+        data_dir = Path(__file__).resolve().parent / ".glipboard-data"
     data_dir.mkdir(parents=True, exist_ok=True)
     return data_dir
 

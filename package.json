@@ -1,5 +1,5 @@
 {
-  "name": "myclipboard",
+  "name": "glipboard",
   "version": "1.0.0",
   "description": "Clipboard manager for Pop!_OS built with Python GTK4/libadwaita",
   "scripts": {

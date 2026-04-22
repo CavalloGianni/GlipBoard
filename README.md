@@ -1,6 +1,8 @@
-# MyClipboard
+# GlipBoard
 
 Clipboard manager per Pop!_OS, scritto in Python con GTK4/libadwaita.
+
+- `GlipBoard` usa una finestra principale GTK4 stabile e una tray separata via AppIndicator.
 
 ## Avvio
 
@@ -26,4 +28,3 @@ Questo avvia:
 - `gtk_app.py`: applicazione principale GTK4
 - `tray_helper.py`: helper tray separato GTK3/AppIndicator
 - `scripts/wl-watch-event.sh`: framing degli eventi clipboard
-- `legacy/electron/`: prototipo Electron mantenuto solo come riferimento storico
