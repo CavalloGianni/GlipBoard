@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import shutil
 import subprocess
 import sys
 import threading
@@ -25,6 +26,10 @@ POLL_INTERVAL_MS = 800
 WAYLAND_WATCHER_ARGS = ["wl-paste", "--type", "text", "--watch", "sh", "scripts/wl-watch-event.sh"]
 PROJECT_DIR = Path(__file__).resolve().parent
 APP_ICON_PATH = PROJECT_DIR / "image (2).png"
+APP_DATA_DIRNAME = "glipboard"
+PRIVATE_DIR_MODE = 0o700
+PRIVATE_FILE_MODE = 0o600
+LEGACY_DATA_FILENAMES = ("clipboard-history.json", "settings.json", "commands.jsonl")
 
 
 def normalize_text(text: str) -> str:
@@ -55,6 +60,46 @@ def command_exists(command: str, args: list[str] | None = None) -> bool:
 
 def get_session_type() -> str:
     return str(GLib.getenv("XDG_SESSION_TYPE") or "").strip().lower()
+
+
+def ensure_private_dir(path: Path) -> Path:
+    path.mkdir(parents=True, exist_ok=True)
+    try:
+        os.chmod(path, PRIVATE_DIR_MODE)
+    except OSError:
+        pass
+    return path
+
+
+def ensure_private_file(path: Path) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if not path.exists():
+        path.touch()
+    try:
+        os.chmod(path, PRIVATE_FILE_MODE)
+    except OSError:
+        pass
+    return path
+
+
+def get_standard_data_dir() -> Path:
+    return Path(GLib.get_user_data_dir()) / APP_DATA_DIRNAME
+
+
+def migrate_legacy_data(legacy_dir: Path, target_dir: Path) -> None:
+    if not legacy_dir.exists() or legacy_dir.resolve() == target_dir.resolve():
+        return
+
+    for filename in LEGACY_DATA_FILENAMES:
+        source = legacy_dir / filename
+        destination = target_dir / filename
+        if not source.exists() or destination.exists():
+            continue
+        try:
+            shutil.copy2(source, destination)
+            ensure_private_file(destination)
+        except OSError:
+            continue
 
 
 class ClipboardBackend:
@@ -118,12 +163,9 @@ def get_data_dir() -> Path:
     if override:
         data_dir = Path(override).expanduser()
     else:
-        legacy_dir = PROJECT_DIR / ".glipboard-data"
-        if legacy_dir.exists():
-            data_dir = legacy_dir
-        else:
-            data_dir = Path(GLib.get_user_data_dir()) / "glipboard"
-    data_dir.mkdir(parents=True, exist_ok=True)
+        data_dir = get_standard_data_dir()
+        migrate_legacy_data(PROJECT_DIR / ".glipboard-data", data_dir)
+    ensure_private_dir(data_dir)
     return data_dir
 
 
@@ -143,7 +185,8 @@ class AppState:
 class HistoryStore:
     def __init__(self, base_dir: Path) -> None:
         self.path = base_dir / "clipboard-history.json"
-        self.path.parent.mkdir(parents=True, exist_ok=True)
+        ensure_private_dir(self.path.parent)
+        ensure_private_file(self.path)
 
     def load(self, max_items: int) -> list[str]:
         if not self.path.exists():
@@ -171,12 +214,13 @@ class HistoryStore:
             "items": items[:max_items],
         }
         self.path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        ensure_private_file(self.path)
 
 
 class SettingsStore:
     def __init__(self, base_dir: Path) -> None:
         self.path = base_dir / "settings.json"
-        self.path.parent.mkdir(parents=True, exist_ok=True)
+        ensure_private_dir(self.path.parent)
 
     def load(self) -> AppSettings:
         if not self.path.exists():
@@ -215,6 +259,7 @@ class SettingsStore:
             "autostart_enabled": settings.autostart_enabled,
         }
         self.path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        ensure_private_file(self.path)
 
 
 class AutostartManager:
@@ -255,8 +300,8 @@ class AutostartManager:
 class CommandChannel:
     def __init__(self, base_dir: Path) -> None:
         self.path = base_dir / "commands.jsonl"
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.touch(exist_ok=True)
+        ensure_private_dir(self.path.parent)
+        ensure_private_file(self.path)
         self._read_position = self.path.stat().st_size
 
     def write_command(self, command: str, payload: dict | None = None) -> None:
@@ -535,8 +580,8 @@ class MainWindow(Adw.ApplicationWindow):
         clear_button.set_tooltip_text("Pulisci cronologia")
         clear_button.connect("clicked", lambda *_args: self.app_ref.clear_history())
 
-        header.pack_end(clear_button)
-        header.pack_end(prefs_button)
+        header.pack_start(prefs_button)
+        header.pack_start(clear_button)
 
         toolbar.add_top_bar(header)
 
@@ -547,28 +592,59 @@ class MainWindow(Adw.ApplicationWindow):
         content.set_margin_end(16)
         toolbar.set_content(content)
 
-        status_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
-        status_card.add_css_class("card")
-        status_card.set_margin_top(4)
-        status_card.set_margin_bottom(4)
-        status_card.set_margin_start(4)
-        status_card.set_margin_end(4)
+        privacy_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+        privacy_card.add_css_class("card")
+        privacy_card.set_margin_top(4)
+        privacy_card.set_margin_bottom(4)
+        privacy_card.set_margin_start(4)
+        privacy_card.set_margin_end(4)
 
-        self.count_label = Gtk.Label(xalign=0)
-        self.count_label.add_css_class("heading")
-        self.count_label.set_margin_top(12)
-        self.count_label.set_margin_start(12)
-        self.count_label.set_margin_end(12)
+        privacy_title = Gtk.Label(label="Avviso privacy", xalign=0)
+        privacy_title.add_css_class("heading")
+        privacy_title.set_margin_top(12)
+        privacy_title.set_margin_start(12)
+        privacy_title.set_margin_end(12)
 
-        self.status_label = Gtk.Label(xalign=0)
-        self.status_label.add_css_class("dim-label")
-        self.status_label.set_margin_bottom(12)
-        self.status_label.set_margin_start(12)
-        self.status_label.set_margin_end(12)
+        privacy_text = Gtk.Label(
+            label=(
+                "GlipBoard salva in chiaro la cronologia appunti solo in locale sul tuo PC."
+            ),
+            wrap=True,
+            wrap_mode=2,
+            xalign=0,
+        )
+        privacy_text.add_css_class("dim-label")
+        privacy_text.set_margin_bottom(12)
+        privacy_text.set_margin_start(12)
+        privacy_text.set_margin_end(12)
 
-        status_card.append(self.count_label)
-        status_card.append(self.status_label)
-        content.append(status_card)
+        privacy_card.append(privacy_title)
+        privacy_card.append(privacy_text)
+        content.append(privacy_card)
+
+        history_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        history_card.add_css_class("card")
+        history_card.set_margin_top(4)
+        history_card.set_margin_bottom(4)
+        history_card.set_margin_start(4)
+        history_card.set_margin_end(4)
+
+        history_header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        history_header.set_margin_top(4)
+        history_header.set_margin_bottom(8)
+        history_header.set_margin_start(4)
+        history_header.set_margin_end(4)
+
+        history_title = Gtk.Label(label="Elementi copiati", xalign=0)
+        history_title.add_css_class("heading")
+        history_title.set_hexpand(True)
+
+        self.count_label = Gtk.Label(xalign=1)
+        self.count_label.add_css_class("dim-label")
+
+        history_header.append(history_title)
+        history_header.append(self.count_label)
+        history_card.append(history_header)
 
         self.list_box = Gtk.ListBox(selection_mode=Gtk.SelectionMode.NONE)
         self.list_box.add_css_class("boxed-list")
@@ -576,7 +652,8 @@ class MainWindow(Adw.ApplicationWindow):
         scrolled = Gtk.ScrolledWindow(vexpand=True, hexpand=True)
         scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scrolled.set_child(self.list_box)
-        content.append(scrolled)
+        history_card.append(scrolled)
+        content.append(history_card)
 
         self.empty_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
         self.empty_box.add_css_class("card")
@@ -617,8 +694,7 @@ class MainWindow(Adw.ApplicationWindow):
     def refresh(self) -> None:
         state = self.app_ref.state
         settings = self.app_ref.settings
-        self.count_label.set_label(f"Elementi copiati: {len(state.items)} di {settings.max_items}")
-        self.status_label.set_label(state.status)
+        self.count_label.set_label(f"{len(state.items)} di {settings.max_items}")
 
         child = self.list_box.get_first_child()
         while child:
@@ -798,7 +874,6 @@ class MyClipboardApp(Adw.Application):
         self.persist_history()
         backend_label = self.clipboard_backend.status_label if self.clipboard_backend else "clipboard"
         self.set_status(f"Watcher clipboard attivo ({backend_label})")
-        print(f"Clipboard catturata: {summarize_text(normalized)}")
         return False
 
     def restore_clipboard(self, text: str) -> None:

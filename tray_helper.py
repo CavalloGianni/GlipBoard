@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -19,6 +20,50 @@ APP_TITLE = "GlipBoard"
 MAX_MENU_HISTORY_ITEMS = 5
 PROJECT_DIR = Path(__file__).resolve().parent
 APP_ICON_PATH = PROJECT_DIR / "image (2).png"
+APP_DATA_DIRNAME = "glipboard"
+PRIVATE_DIR_MODE = 0o700
+PRIVATE_FILE_MODE = 0o600
+LEGACY_DATA_FILENAMES = ("clipboard-history.json", "settings.json", "commands.jsonl")
+
+
+def ensure_private_dir(path: Path) -> Path:
+    path.mkdir(parents=True, exist_ok=True)
+    try:
+        os.chmod(path, PRIVATE_DIR_MODE)
+    except OSError:
+        pass
+    return path
+
+
+def ensure_private_file(path: Path) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if not path.exists():
+        path.touch()
+    try:
+        os.chmod(path, PRIVATE_FILE_MODE)
+    except OSError:
+        pass
+    return path
+
+
+def get_standard_data_dir() -> Path:
+    return Path(GLib.get_user_data_dir()) / APP_DATA_DIRNAME
+
+
+def migrate_legacy_data(legacy_dir: Path, target_dir: Path) -> None:
+    if not legacy_dir.exists() or legacy_dir.resolve() == target_dir.resolve():
+        return
+
+    for filename in LEGACY_DATA_FILENAMES:
+        source = legacy_dir / filename
+        destination = target_dir / filename
+        if not source.exists() or destination.exists():
+            continue
+        try:
+            shutil.copy2(source, destination)
+            ensure_private_file(destination)
+        except OSError:
+            continue
 
 
 def get_data_dir() -> Path:
@@ -26,24 +71,22 @@ def get_data_dir() -> Path:
     if override:
         data_dir = Path(override).expanduser()
     else:
-        legacy_dir = PROJECT_DIR / ".glipboard-data"
-        if legacy_dir.exists():
-            data_dir = legacy_dir
-        else:
-            data_dir = Path(GLib.get_user_data_dir()) / "glipboard"
-    data_dir.mkdir(parents=True, exist_ok=True)
+        data_dir = get_standard_data_dir()
+        migrate_legacy_data(PROJECT_DIR / ".glipboard-data", data_dir)
+    ensure_private_dir(data_dir)
     return data_dir
 
 
 class CommandChannel:
     def __init__(self, base_dir: Path) -> None:
         self.path = base_dir / "commands.jsonl"
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.touch(exist_ok=True)
+        ensure_private_dir(self.path.parent)
+        ensure_private_file(self.path)
 
     def write_command(self, command: str, payload: dict | None = None) -> None:
         with self.path.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps({"command": command, "payload": payload or {}, "ts": time.time()}) + "\n")
+        ensure_private_file(self.path)
 
 
 class HistoryStore:

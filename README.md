@@ -136,6 +136,16 @@ To reinstall it:
 3. Open the main window or use the tray menu.
 4. Select an item from the history to copy it back to the clipboard.
 
+## Privacy Notice
+
+GlipBoard stores clipboard history locally on the current user's computer.
+
+- Clipboard history is not uploaded by the app
+- Each user keeps their own local history file
+- Local storage may still contain sensitive copied text if the user copies passwords, temporary codes, banking data, or private messages
+
+For this reason, GlipBoard should not be used as a safe place for highly sensitive secrets. Treat clipboard history as private local convenience data, not as secure storage.
+
 ## System Shortcut
 
 If you want a reliable keyboard shortcut to bring GlipBoard back to the foreground, use a system-level shortcut instead of an app-managed global hotkey.
@@ -188,7 +198,7 @@ GlipBoard stores its local application data in:
 ~/.local/share/glipboard/
 ```
 
-During development, if `.glipboard-data/` already exists in the project directory, GlipBoard continues to use it for compatibility. In the installed application, it uses the standard user data directory.
+If an older `.glipboard-data/` folder exists in the project directory from past development builds, GlipBoard migrates compatible local data to the standard user data directory and continues using the standard path after that.
 
 ## Project Structure
 
