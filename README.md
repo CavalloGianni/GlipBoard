@@ -33,9 +33,44 @@ sudo apt install python3 python3-gi python3-gi-cairo gir1.2-gtk-4.0 gir1.2-adw-1
 
 Se usi la tray su GNOME/Pop!_OS, assicurati anche di avere il supporto AppIndicator attivo.
 
-## Avvio in sviluppo
+## Installazione consigliata
 
-Dal repository:
+Il modo consigliato per installare GlipBoard e scaricare il file `.deb` dalla pagina `Releases` del progetto su GitHub.
+
+Dopo il download:
+
+```bash
+sudo apt install ./glipboard_0.1.0_all.deb
+```
+
+Questa installazione aggiunge GlipBoard alle applicazioni del sistema e installa i file dell'app in modo piu vicino a quello di un utente finale.
+
+## Pacchetto .deb
+
+Se vuoi generare il pacchetto Debian dal repository:
+
+```bash
+chmod +x scripts/build-deb.sh
+npm run build-deb
+```
+
+Il pacchetto generato finira in:
+
+```text
+dist/glipboard_0.1.0_all.deb
+```
+
+Per installarlo su Pop!_OS:
+
+```bash
+sudo apt install ./dist/glipboard_0.1.0_all.deb
+```
+
+La build `.deb` installa l'app in `/usr/share/glipboard`, aggiunge il launcher `glipboard` e registra la voce desktop di sistema.
+
+## Sviluppo locale
+
+Per avviare GlipBoard direttamente dal repository:
 
 ```bash
 npm start
@@ -47,7 +82,9 @@ Questo comando avvia:
 - il watcher della clipboard basato su `wl-paste`
 - il processo helper della tray
 
-## Installazione locale
+## Installazione locale dal repository
+
+Questa opzione e utile soprattutto per sviluppo e test locali, non come percorso principale per gli utenti finali.
 
 Per aggiungere GlipBoard alle applicazioni del tuo utente:
 
@@ -74,29 +111,6 @@ Per reinstallare:
 ./scripts/uninstall-local.sh
 ./scripts/install-local.sh
 ```
-
-## Pacchetto .deb
-
-Per costruire un pacchetto Debian locale:
-
-```bash
-chmod +x scripts/build-deb.sh
-npm run build-deb
-```
-
-Il pacchetto generato finira in:
-
-```text
-dist/glipboard_0.1.0_all.deb
-```
-
-Per installarlo su Pop!_OS:
-
-```bash
-sudo apt install ./dist/glipboard_0.1.0_all.deb
-```
-
-La build `.deb` installa l'app in `/usr/share/glipboard`, aggiunge il launcher `glipboard` e registra la voce desktop di sistema.
 
 ## Come si usa
 
