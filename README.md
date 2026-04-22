@@ -4,6 +4,8 @@ GlipBoard e un clipboard manager desktop per Pop!_OS.
 
 L'app salva la cronologia dei testi copiati, ti permette di rivederli in una finestra semplice e di ricopiarli con un clic quando ti servono di nuovo.
 
+![Logo GlipBoard](logo.2816x1536.png)
+
 ## Cosa fa
 
 - monitora i testi copiati in ambiente Wayland
@@ -80,6 +82,16 @@ Per reinstallare:
 3. Apri la finestra principale o usa la tray.
 4. Seleziona un elemento della cronologia per copiarlo di nuovo negli appunti.
 
+## Screenshot
+
+Gli screenshot ufficiali dell'app saranno aggiunti in `docs/screenshots/`.
+
+Suggerimento per la repository:
+
+- una schermata della finestra principale
+- una schermata della tray
+- una schermata delle impostazioni
+
 ## Dati locali
 
 GlipBoard salva i dati dell'app nella cartella locale:
@@ -114,7 +126,6 @@ Documenti utili:
 ## Roadmap iniziale
 
 - migliorare ancora la presentazione della repository
-- aggiungere screenshot ufficiali dell'app
 - preparare una prima release pubblica
 - valutare un pacchetto `.deb` per installazione piu semplice
 
