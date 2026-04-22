@@ -53,7 +53,7 @@ The recommended way to install GlipBoard is to download the `.deb` package from 
 After downloading the package:
 
 ```bash
-sudo dpkg -i ./glipboard_<version>_all.deb
+sudo dpkg -i ./glipboard_0.1.0_all.deb
 sudo apt -f install
 ```
 
