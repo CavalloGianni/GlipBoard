@@ -121,13 +121,17 @@ Per reinstallare:
 
 ## Screenshot
 
-Gli screenshot ufficiali dell'app saranno aggiunti in `docs/screenshots/`.
+### Tray
 
-Suggerimento per la repository:
+![Tray menu di GlipBoard](docs/screenshots/tray-menu.png)
 
-- una schermata della finestra principale
-- una schermata della tray
-- una schermata delle impostazioni
+### Finestra Principale
+
+![Finestra principale di GlipBoard](docs/screenshots/main-window.png)
+
+### Impostazioni
+
+![Finestra impostazioni di GlipBoard](docs/screenshots/settings-window.png)
 
 ## Dati locali
 
