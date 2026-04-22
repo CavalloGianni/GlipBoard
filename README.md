@@ -1,35 +1,64 @@
 # GlipBoard
 
-Clipboard manager per Pop!_OS, scritto in Python con GTK4/libadwaita.
+GlipBoard e un clipboard manager desktop per Pop!_OS.
 
-- `GlipBoard` usa una finestra principale GTK4 stabile e una tray separata via AppIndicator.
+L'app salva la cronologia dei testi copiati, ti permette di rivederli in una finestra semplice e di ricopiarli con un clic quando ti servono di nuovo.
 
-## Avvio
+## Cosa fa
+
+- monitora i testi copiati in ambiente Wayland
+- mantiene una cronologia locale degli ultimi elementi copiati
+- permette di ricopiare rapidamente un elemento dalla lista
+- offre una finestra principale GTK4 stabile
+- integra una tray come scorciatoia pratica, senza dipendere solo da quella
+- supporta impostazioni base come numero massimo di elementi e avvio dell'interfaccia
+
+## Stack del progetto
+
+- Python 3
+- GTK4 + libadwaita
+- `wl-clipboard`
+- `AyatanaAppIndicator3`
+
+## Requisiti su Pop!_OS
+
+Installa i pacchetti necessari:
+
+```bash
+sudo apt update
+sudo apt install python3 python3-gi python3-gi-cairo gir1.2-gtk-4.0 gir1.2-adw-1 wl-clipboard gir1.2-ayatanaappindicator3-0.1
+```
+
+Se usi la tray su GNOME/Pop!_OS, assicurati anche di avere il supporto AppIndicator attivo.
+
+## Avvio in sviluppo
+
+Dal repository:
 
 ```bash
 npm start
 ```
 
-Questo avvia:
+Questo comando avvia:
 
-- watcher clipboard via `wl-paste`
-- finestra GTK principale
-- helper tray separato via `AyatanaAppIndicator3`
+- la finestra principale GTK
+- il watcher della clipboard basato su `wl-paste`
+- il processo helper della tray
 
-## Installazione desktop locale
+## Installazione locale
 
-Per aggiungere GlipBoard alle applicazioni del tuo utente Pop!_OS:
+Per aggiungere GlipBoard alle applicazioni del tuo utente:
 
 ```bash
 chmod +x scripts/install-local.sh scripts/uninstall-local.sh
 ./scripts/install-local.sh
 ```
 
-Questo crea:
+L'installazione crea:
 
-- un launcher desktop in `~/.local/share/applications/glipboard.desktop`
-- uno script di avvio in `~/.local/share/glipboard/run-glipboard.sh`
-- usa l'icona del progetto `logo.2816x1536.png`
+- il launcher desktop in `~/.local/share/applications/glipboard.desktop`
+- lo script di avvio in `~/.local/share/glipboard/run-glipboard.sh`
+- il riferimento all'icona `logo.2816x1536.png`
 
 Per rimuovere l'installazione locale:
 
@@ -37,15 +66,51 @@ Per rimuovere l'installazione locale:
 ./scripts/uninstall-local.sh
 ```
 
-## Requisiti principali
+Per reinstallare:
 
-- Python 3
-- GTK4 + libadwaita
-- `wl-clipboard`
-- `gir1.2-ayatanaappindicator3-0.1`
+```bash
+./scripts/uninstall-local.sh
+./scripts/install-local.sh
+```
 
-## Struttura
+## Come si usa
 
-- `gtk_app.py`: applicazione principale GTK4
-- `tray_helper.py`: helper tray separato GTK3/AppIndicator
-- `scripts/wl-watch-event.sh`: framing degli eventi clipboard
+1. Avvia GlipBoard.
+2. Copia normalmente del testo nel sistema.
+3. Apri la finestra principale o usa la tray.
+4. Seleziona un elemento della cronologia per copiarlo di nuovo negli appunti.
+
+## Dati locali
+
+GlipBoard salva i dati dell'app nella cartella locale:
+
+```text
+.glipboard-data/
+```
+
+Qui vengono conservati cronologia e impostazioni locali.
+
+## Struttura del progetto
+
+- `gtk_app.py`: applicazione principale GTK4/libadwaita
+- `tray_helper.py`: helper tray separato basato su AppIndicator
+- `scripts/install-local.sh`: installazione desktop locale
+- `scripts/uninstall-local.sh`: rimozione installazione locale
+- `scripts/wl-watch-event.sh`: gestione eventi clipboard via `wl-paste`
+
+## Stato del progetto
+
+Il progetto e gia utilizzabile su Pop!_OS ed e orientato a un uso personale reale, con l'idea di essere rifinito e reso sempre piu pronto per la pubblicazione.
+
+## Roadmap iniziale
+
+- migliorare ancora la presentazione della repository
+- aggiungere screenshot ufficiali dell'app
+- preparare una prima release pubblica
+- valutare un pacchetto `.deb` per installazione piu semplice
+
+## Repository
+
+Repository GitHub:
+
+`https://github.com/CavalloGianni/GlipBoard`
