@@ -73,13 +73,13 @@ npm run build-deb
 The generated package will be created at:
 
 ```text
-dist/glipboard_0.1.1_all.deb
+dist/glipboard_0.1.0_all.deb
 ```
 
 To install the package locally:
 
 ```bash
-sudo dpkg -i ./dist/glipboard_0.1.1_all.deb
+sudo dpkg -i ./dist/glipboard_0.1.0_all.deb
 sudo apt -f install
 ```
 
@@ -211,16 +211,14 @@ If an older `.glipboard-data/` folder exists in the project directory from past 
 
 ## Release Status
 
-GlipBoard is already usable on Pop!_OS and has been tested as an installable `.deb` package. The current public release is:
+GlipBoard is already usable on Pop!_OS and has been tested as an installable `.deb` package. The first public release is:
 
-- `v0.1.1` current public release
-- `v0.1.0` previous release
+- `v0.1.0`
 
 Related documents:
 
 - `CHANGELOG.md`
 - `docs/releases/0.1.0.md`
-- `docs/releases/0.1.1.md`
 
 ## Roadmap
 

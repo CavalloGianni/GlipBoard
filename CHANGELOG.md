@@ -2,23 +2,6 @@
 
 Tutte le modifiche rilevanti di GlipBoard saranno documentate in questo file.
 
-## [0.1.1] - 2026-04-22
-
-Miglioramento di compatibilita per ambienti Ubuntu/X11.
-
-### Changed
-
-- aggiunto supporto clipboard tramite `xclip` per sessioni X11
-- mantenuto `wl-clipboard` come backend principale per Wayland
-- migliorata la rilevazione automatica del backend clipboard disponibile
-- aggiornato il packaging `.deb` per includere `xclip` tra le dipendenze
-
-### Notes
-
-- questa release nasce per migliorare il comportamento su Ubuntu oltre a Pop!_OS
-- il warning `_apt` durante `apt install ./file.deb` non e la causa del problema clipboard
-- la compatibilita Wayland resta il percorso principale gia testato su Pop!_OS
-
 ## [0.1.0] - 2026-04-22
 
 Prima release pubblica del progetto.
@@ -29,10 +12,23 @@ Prima release pubblica del progetto.
 - cronologia dei testi copiati con limite configurabile
 - ripristino rapido di un elemento della cronologia con un clic
 - tray helper separato con accesso rapido alla finestra e agli ultimi elementi
+- supporto clipboard Wayland tramite `wl-clipboard`
+- supporto clipboard X11 tramite `xclip`
+- rilevazione automatica del backend clipboard disponibile
 - installazione desktop locale tramite script
+- pacchetto `.deb` installabile per uso desktop
 - supporto a icona personalizzata del progetto
+- avviso privacy nell'interfaccia e documentazione aggiornata
+
+### Changed
+
+- rimossa stampa nel terminale del testo copiato dagli appunti
+- storage locale spostato sul path standard utente `~/.local/share/glipboard/`
+- migrazione automatica dati compatibili da vecchie cartelle locali `.glipboard-data/`
+- permessi storage locale irrigiditi per maggiore privacy
 
 ### Notes
 
-- il progetto e pensato prima di tutto per Pop!_OS in ambiente Wayland
-- lo stato attuale e stabile per uso personale e base pubblica iniziale
+- release pubblica iniziale consigliata per GlipBoard
+- app salva cronologia solo in locale sul PC dell'utente
+- GlipBoard non deve essere usato come archivio sicuro per password o segreti
