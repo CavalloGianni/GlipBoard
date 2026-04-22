@@ -22,11 +22,7 @@ DEFAULT_MAX_HISTORY_ITEMS = 15
 MAX_TEXT_LENGTH = 50_000
 WATCHER_ARGS = ["wl-paste", "--type", "text", "--watch", "sh", "scripts/wl-watch-event.sh"]
 PROJECT_DIR = Path(__file__).resolve().parent
-APP_ICON_PATH = (
-    PROJECT_DIR / "logo.2816x1536.png"
-    if (PROJECT_DIR / "logo.2816x1536.png").exists()
-    else PROJECT_DIR / "logo.png"
-)
+APP_ICON_PATH = PROJECT_DIR / "logo.2816x1536.png"
 
 
 def normalize_text(text: str) -> str:

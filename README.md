@@ -16,6 +16,27 @@ Questo avvia:
 - finestra GTK principale
 - helper tray separato via `AyatanaAppIndicator3`
 
+## Installazione desktop locale
+
+Per aggiungere GlipBoard alle applicazioni del tuo utente Pop!_OS:
+
+```bash
+chmod +x scripts/install-local.sh scripts/uninstall-local.sh
+./scripts/install-local.sh
+```
+
+Questo crea:
+
+- un launcher desktop in `~/.local/share/applications/glipboard.desktop`
+- uno script di avvio in `~/.local/share/glipboard/run-glipboard.sh`
+- usa l'icona del progetto `logo.2816x1536.png`
+
+Per rimuovere l'installazione locale:
+
+```bash
+./scripts/uninstall-local.sh
+```
+
 ## Requisiti principali
 
 - Python 3

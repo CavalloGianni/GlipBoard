@@ -18,11 +18,7 @@ APP_ID = "glipboard-tray"
 APP_TITLE = "GlipBoard"
 MAX_MENU_HISTORY_ITEMS = 5
 PROJECT_DIR = Path(__file__).resolve().parent
-APP_ICON_PATH = (
-    PROJECT_DIR / "logo.2816x1536.png"
-    if (PROJECT_DIR / "logo.2816x1536.png").exists()
-    else PROJECT_DIR / "logo.png"
-)
+APP_ICON_PATH = PROJECT_DIR / "logo.2816x1536.png"
 
 
 def get_data_dir() -> Path:
