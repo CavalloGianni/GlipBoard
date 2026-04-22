@@ -17,6 +17,7 @@ from gi.repository import GLib, Gtk
 APP_ID = "glipboard-tray"
 APP_TITLE = "GlipBoard"
 MAX_MENU_HISTORY_ITEMS = 5
+APP_ICON_PATH = Path(__file__).resolve().parent / "logo.png"
 
 
 def get_data_dir() -> Path:
@@ -125,11 +126,13 @@ def main() -> int:
 
     indicator = AppIndicator3.Indicator.new(
         APP_ID,
-        "edit-paste-symbolic",
+        str(APP_ICON_PATH) if APP_ICON_PATH.exists() else "edit-paste-symbolic",
         AppIndicator3.IndicatorCategory.APPLICATION_STATUS,
     )
     indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
     indicator.set_title(APP_TITLE)
+    if APP_ICON_PATH.exists():
+        indicator.set_icon_full(str(APP_ICON_PATH), APP_TITLE)
 
     menu = Gtk.Menu()
     rebuild_menu(menu, channel, history_store)

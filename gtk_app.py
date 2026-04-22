@@ -21,6 +21,7 @@ APP_NAME = "GlipBoard"
 DEFAULT_MAX_HISTORY_ITEMS = 15
 MAX_TEXT_LENGTH = 50_000
 WATCHER_ARGS = ["wl-paste", "--type", "text", "--watch", "sh", "scripts/wl-watch-event.sh"]
+APP_ICON_PATH = Path(__file__).resolve().parent / "logo.png"
 
 
 def normalize_text(text: str) -> str:
@@ -165,18 +166,22 @@ class AutostartManager:
 
     def _desktop_entry(self) -> str:
         exec_path = f"/usr/bin/env bash -lc 'cd \"{self.project_dir}\" && python3 gtk_app.py'"
+        icon_line = f"Icon={APP_ICON_PATH}" if APP_ICON_PATH.exists() else ""
+        lines = [
+            "[Desktop Entry]",
+            "Type=Application",
+            "Version=1.0",
+            f"Name={APP_NAME}",
+            "Comment=Clipboard manager for Pop!_OS",
+            f"Exec={exec_path}",
+            "Terminal=false",
+            "Categories=Utility;",
+            "X-GNOME-Autostart-enabled=true",
+        ]
+        if icon_line:
+            lines.append(icon_line)
         return "\n".join(
-            [
-                "[Desktop Entry]",
-                "Type=Application",
-                "Version=1.0",
-                f"Name={APP_NAME}",
-                "Comment=Clipboard manager for Pop!_OS",
-                f"Exec={exec_path}",
-                "Terminal=false",
-                "Categories=Utility;",
-                "X-GNOME-Autostart-enabled=true",
-            ]
+            lines
         ) + "\n"
 
 
