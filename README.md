@@ -53,10 +53,13 @@ The recommended way to install GlipBoard is to download the `.deb` package from 
 After downloading the package:
 
 ```bash
-sudo apt install ./glipboard_<version>_all.deb
+sudo dpkg -i ./glipboard_<version>_all.deb
+sudo apt -f install
 ```
 
 This installs GlipBoard like a normal end-user application and makes it available from the system application launcher.
+
+Using `dpkg -i` first avoids common `_apt` sandbox warnings that can appear when installing a local `.deb` directly from a user directory.
 
 ## Build the `.deb` Package
 
@@ -76,7 +79,8 @@ dist/glipboard_0.1.1_all.deb
 To install the package locally:
 
 ```bash
-sudo apt install ./dist/glipboard_0.1.1_all.deb
+sudo dpkg -i ./dist/glipboard_0.1.1_all.deb
+sudo apt -f install
 ```
 
 The `.deb` build installs the application under `/usr/share/glipboard`, adds the `glipboard` launcher, and registers the desktop entry for the system.
@@ -199,8 +203,8 @@ During development, if `.glipboard-data/` already exists in the project director
 
 GlipBoard is already usable on Pop!_OS and has been tested as an installable `.deb` package. The current public release is:
 
-- `v0.1.1` in preparation
-- `v0.1.0` currently public
+- `v0.1.1` current public release
+- `v0.1.0` previous release
 
 Related documents:
 
