@@ -175,3 +175,8 @@ Documenti utili:
 Repository GitHub:
 
 `https://github.com/CavalloGianni/GlipBoard`
+
+## Metadati pubblici
+
+- autore: Gianni Cavallo
+- licenza: MIT
