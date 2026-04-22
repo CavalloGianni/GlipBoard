@@ -5,7 +5,7 @@ __pycache__/
 *.pyd
 
 # Local app data
-.myclipboard-data/
+.glipboard-data/
 
 # Node legacy leftovers
 node_modules/
